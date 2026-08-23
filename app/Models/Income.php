@@ -17,7 +17,7 @@ class Income extends Model
         'total',
         'porcentaje_ahorro',
         'notes',
-        'is_active'
+        'is_active',
     ];
 
     public function user()
@@ -32,6 +32,6 @@ class Income extends Model
 
     public function paymentMethod()
     {
-        return $this->belongsTo(PaymentMehod::class);
+        return $this->belongsTo(PaymentMethod::class);
     }
 }

@@ -11,7 +11,8 @@ class Category extends Model
     protected $fillable = [
         'icon_id',
         'nombre',
-        'is_active'
+        'expense_type_id',
+        'is_active',
     ];
 
     protected $casts = [
@@ -26,5 +27,10 @@ class Category extends Model
     public function subcategories()
     {
         return $this->hasMany(Subcategory::class);
+    }
+
+    public function expenseType()
+    {
+        return $this->belongsTo(ExpenseType::class);
     }
 }

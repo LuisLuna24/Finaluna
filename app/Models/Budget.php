@@ -14,7 +14,10 @@ class Budget extends Model
         'fecha_inicio',
         'fecha_fin',
         'presupuesto',
-        'is_active'
+        'gasto_real',
+        'balance',
+        'notas',
+        'is_active',
     ];
 
     public function user()
@@ -22,11 +25,13 @@ class Budget extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Gastos
     public function expenses()
     {
         return $this->hasMany(Expense::class);
     }
 
+    // Ingresos
     public function incomes()
     {
         return $this->hasMany(Income::class);
@@ -35,5 +40,10 @@ class Budget extends Model
     public function pocketItems()
     {
         return $this->belongsToMany(PocketItem::class, 'budget_pocket_items');
+    }
+
+    public function budgetItems()
+    {
+        return $this->hasMany(BudgetItem::class);
     }
 }

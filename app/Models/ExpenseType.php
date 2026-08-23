@@ -10,11 +10,16 @@ class ExpenseType extends Model
 
     protected $fillable = [
         'nombre',
-        'is_active'
+        'is_active',
     ];
 
     public function expenses()
     {
         return $this->hasMany(Expense::class);
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
     }
 }

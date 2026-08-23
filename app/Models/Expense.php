@@ -10,15 +10,13 @@ class Expense extends Model
 
     protected $fillable = [
         'user_id',
-        'budget_id',
-        'subcategory_id',
-        'expense_type_id',
+        'budget_item_id',
         'payment_method_id',
         'fecha',
         'descripcion',
         'total',
         'notes',
-        'is_active'
+        'is_active',
     ];
 
     public function user()
@@ -26,23 +24,13 @@ class Expense extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function budget()
+    public function budgetItem()
     {
-        return $this->belongsTo(Budget::class);
-    }
-
-    public function subcategory()
-    {
-        return $this->belongsTo(Subcategory::class);
-    }
-
-    public function expenseType()
-    {
-        return $this->belongsTo(ExpenseType::class);
+        return $this->belongsTo(BudgetItem::class);
     }
 
     public function paymentMethod()
     {
-        return $this->belongsTo(PaymentMehod::class);
+        return $this->belongsTo(PaymentMethod::class);
     }
 }

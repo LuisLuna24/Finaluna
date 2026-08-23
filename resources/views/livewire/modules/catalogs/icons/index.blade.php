@@ -39,6 +39,9 @@
     {{-- Table --}}
     <x-m-table :headers="$headers" :rows="$icons" with-pagination>
 
+        @scope('cell_icon', $icon)
+            <x-m-icon :name="'o-' . $icon->icon" />
+        @endscope
         @scope('actions', $icon)
             <div class="flex items-center justify-end gap-1">
                 {{-- Editar --}}
@@ -62,11 +65,10 @@
                 <h3 class="text-base font-semibold text-gray-700 dark:text-gray-200">
                     Sin iconos registrados
                 </h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 mb-4">
                     Aún no has agregado ningún icono.
                 </p>
-                <x-m-button @click="$wire.name = ''; $wire.editId = null; $wire.formModal = true" icon="o-plus"
-                    label="Agregar primer icono" class="btn-sm btn-primary mt-5" />
+                <x-m-button wire:click="create" icon="o-plus" label="Nuevo icono" class="btn-primary" />
             </div>
         </x-slot:empty>
     </x-m-table>
@@ -74,8 +76,7 @@
     <x-m-modal wire:model="formModal" title="{{ $editId ? 'Editar Icono' : 'Nuevo Icono' }}" class="backdrop-blur">
         <x-m-form wire:submit="save">
             <x-m-input label="Nombre" wire:model="name" />
-            <x-m-select label="Categoría" placeholder="Seleccione una categoría" wire:model="category_id"
-                :options="$categories" option-value="id" option-label="name" />
+            <x-m-input label="Icono" wire:model="icon" />
             <x-slot:actions>
                 <x-m-button label="Cancelar" @click="$wire.formModal = false" />
                 <x-m-button label="{{ $editId ? 'Actualizar' : 'Guardar' }}" class="btn-primary" type="submit"
@@ -83,5 +84,4 @@
             </x-slot:actions>
         </x-m-form>
     </x-m-modal>
-
 </div>

@@ -17,7 +17,7 @@
                 </div>
             </div>
         </div>
-        <x-m-button wire:click="create" icon="o-plus" label="Nuevo icono" class="btn-primary" />
+        <x-m-button wire:click="create" icon="o-plus" label="Nueva categoría" class="btn-primary" />
     </div>
 
     {{-- Toolbar --}}
@@ -39,6 +39,9 @@
     {{-- Table --}}
     <x-m-table :headers="$headers" :rows="$categories" with-pagination>
 
+        @scope('cell_icon.name', $category)
+            <x-m-icon :name="'o-' . $category->icon->icon" />
+        @endscope
         @scope('actions', $category)
             <div class="flex items-center justify-end gap-1">
                 {{-- Editar --}}
@@ -63,11 +66,10 @@
                 <h3 class="text-base font-semibold text-gray-700 dark:text-gray-200">
                     Sin categorías registradas
                 </h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 mb-4">
                     Aún no has agregado ninguna categoría.
                 </p>
-                <x-m-button @click="$wire.name = ''; $wire.icon_id = null; $wire.editId = null; $wire.formModal = true"
-                    icon="o-plus" label="Agregar primer icono" class="btn-sm btn-primary mt-5" />
+                <x-m-button wire:click="create" icon="o-plus" label="Nueva categoría" class="btn-primary" />
             </div>
         </x-slot:empty>
     </x-m-table>
@@ -78,6 +80,8 @@
             <x-m-input label="Nombre" wire:model="name" />
             <x-m-select label="Icono" placeholder="Seleccione un icono" wire:model="icon_id" :options="$icons"
                 option-value="id" option-label="name" />
+            <x-m-select label="Tipo de gasto" placeholder="Seleccione un tipo de gasto" wire:model="expense_type_id"
+                :options="$expenseTypes" option-value="id" option-label="name" />
             <x-slot:actions>
                 <x-m-button label="Cancelar" @click="$wire.formModal = false" />
                 <x-m-button label="{{ $editId ? 'Actualizar' : 'Guardar' }}" class="btn-primary" type="submit"

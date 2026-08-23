@@ -24,6 +24,10 @@ return new class extends Migration
             $table->date('fecha_fin');
 
             $table->decimal('presupuesto', 10, 2);
+            $table->decimal('gasto_real', 10, 2);
+            $table->decimal('balance', 10, 2);
+
+            $table->text('notes')->nullable();
 
             $table->boolean('is_active')->default(true);
 

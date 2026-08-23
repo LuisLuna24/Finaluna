@@ -15,9 +15,13 @@
 
         <flux:sidebar.nav>
             <flux:sidebar.group :heading="__('Platform')" class="grid">
-                <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
+                <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard.*')"
                     wire:navigate>
                     {{ __('Dashboard') }}
+                </flux:sidebar.item>
+                <flux:sidebar.item icon="banknotes" :href="route('movements.budgets')"
+                    :current="request()->routeIs('movements.*')" wire:navigate>
+                    {{ __('Presupuestos') }}
                 </flux:sidebar.item>
                 <flux:sidebar.group expandable :heading="__('Catalogos')" class="grid"
                     :expanded="request()->routeIs('catalogs.*')">
@@ -34,7 +38,7 @@
                     </flux:sidebar.item>
                     <flux:sidebar.item :href="route('catalogs.expenses')"
                         :current="request()->routeIs('catalogs.expenses')" wire:navigate>Tipos de Gastos
-                        guidelines</flux:sidebar.item>
+                    </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.group>
         </flux:sidebar.nav>

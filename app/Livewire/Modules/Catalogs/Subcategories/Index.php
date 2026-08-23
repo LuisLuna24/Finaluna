@@ -11,60 +11,98 @@ use Mary\Traits\Toast;
 
 class Index extends Component
 {
-    use WithPagination;
     use Toast;
+    use WithPagination;
 
     public $search = '';
 
+    public $searchCategory;
+
     public $formModal = false;
+
     public $name = '';
-    public $icon_id;
+
+    public $names = [];
+
+    public $newName = '';
+
+    public $category_id;
+
     public $editId;
+
+    public $existingSubcategories = [];
+
+    public function updatedCategoryId($value)
+    {
+        if ($value) {
+            $this->existingSubcategories = Subcategory::where('category_id', $value)->pluck('nombre')->toArray();
+        } else {
+            $this->existingSubcategories = [];
+        }
+    }
 
     public function create(): void
     {
-        $this->reset(['name', 'icon', 'editId']);
+        $this->resetForm();
         $this->formModal = true;
     }
 
     public function edit($id): void
     {
-        $category = Category::findOrFail($id);
+        $this->resetForm();
 
-        $this->editId = $category->id;
-        $this->name = $category->name;
-        $this->icon_id = $category->icon_id;
+        $subcategory = Subcategory::findOrFail($id);
+        $this->editId = $subcategory->id;
+        $this->name = $subcategory->nombre;
+        $this->category_id = $subcategory->category_id;
         $this->formModal = true;
+    }
+
+    public function addName()
+    {
+        $this->validate(['newName' => 'required|string|max:255']);
+        if (! in_array($this->newName, $this->names)) {
+            $this->names[] = $this->newName;
+        }
+        $this->newName = '';
+    }
+
+    public function removeName($index)
+    {
+        unset($this->names[$index]);
+        $this->names = array_values($this->names);
     }
 
     public function save()
     {
         $this->validate([
-            'name' => 'required|string|max:255',
-            'icon_id' => 'required|exists:icons,id'
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         DB::beginTransaction();
         try {
             if ($this->editId) {
-                $icon = Category::findOrFail($this->editId);
-                $icon->update(['nombre' => $this->name, 'icon_id' => $this->icon_id]);
+                $this->validate(['name' => 'required|string|max:255']);
+                $subcategory = Subcategory::findOrFail($this->editId);
+                $subcategory->update(['nombre' => $this->name, 'category_id' => $this->category_id]);
                 $this->success(
-                    'Categoría actualizado exitosamente.',
+                    'Subcategoría actualizada exitosamente.',
                     timeout: 2000,
                     position: 'toast-top toast-center'
                 );
             } else {
-                Category::create(['nombre' => $this->name, 'icon_id' => $this->icon_id]);
+                $this->validate(['names' => 'required|array|min:1'], ['names.min' => 'Debe agregar al menos una subcategoría.']);
+                foreach ($this->names as $n) {
+                    Subcategory::create(['nombre' => $n, 'category_id' => $this->category_id]);
+                }
                 $this->success(
-                    'Categoría creada exitosamente.',
+                    'Subcategorías creadas exitosamente.',
                     timeout: 2000,
                     position: 'toast-top toast-center'
                 );
             }
-
+            $this->resetForm();
             $this->formModal = false;
-            $this->reset(['name', 'editId', 'icon_id']);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -72,20 +110,24 @@ class Index extends Component
         }
     }
 
-    public function delete($id)
+    public function resetForm()
     {
-        Category::findOrFail($id)->delete();
-        $this->success('Categoría eliminada exitosamente.', timeout: 2000, position: 'toast-top toast-center');
+        $this->reset(['name', 'names', 'newName', 'editId', 'category_id', 'existingSubcategories']);
     }
 
+    public function delete($id)
+    {
+        Subcategory::findOrFail($id)->delete();
+        $this->success('Subcategoría eliminada exitosamente.', timeout: 2000, position: 'toast-top toast-center');
+    }
 
     public function toggleActive($id): void
     {
         DB::beginTransaction();
         try {
             $category = Subcategory::findOrFail($id);
-            $category->update(['is_active' => !$category->is_active]);
-            $this->success('Categoría actualizada exitosamente.', timeout: 2000, position: 'toast-top toast-center');
+            $category->update(['is_active' => ! $category->is_active]);
+            $this->success('Subcategoría actualizada exitosamente.', timeout: 2000, position: 'toast-top toast-center');
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -105,10 +147,13 @@ class Index extends Component
         $headers = [
             ['key' => 'id', 'label' => '#'],
             ['key' => 'nombre', 'label' => 'Nombre'],
-            ['key' => 'category_id', 'label' => 'Categoría'],
+            ['key' => 'category.nombre', 'label' => 'Categoría'],
             ['key' => 'is_active', 'label' => 'Estatus'],
         ];
-        $subcategories = Subcategory::query()->where('nombre', 'like', '%' . $this->search . '%')->paginate(15);
-        return view('livewire.modules.catalogs.subcategories.index');
+        $subcategories = Subcategory::query()->where('nombre', 'like', '%'.$this->search.'%')->when($this->searchCategory, function ($query) {
+            $query->where('category_id', $this->searchCategory);
+        })->paginate(15);
+
+        return view('livewire.modules.catalogs.subcategories.index', compact('subcategories', 'headers', 'categories'));
     }
 }

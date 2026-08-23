@@ -18,17 +18,9 @@ return new class extends Migration
                 ->constrained('users')
                 ->cascadeOnDelete();
 
-            $table->foreignId('budget_id')
-                ->constrained('budgets')
+            $table->foreignId('budget_item_id')
+                ->constrained('budget_items')
                 ->cascadeOnDelete();
-
-            $table->foreignId('subcategory_id')
-                ->constrained('subcategories')
-                ->restrictOnDelete();
-
-            $table->foreignId('expense_type_id')
-                ->constrained('expense_types')
-                ->restrictOnDelete();
 
             $table->foreignId('payment_method_id')
                 ->constrained('payment_methods')
