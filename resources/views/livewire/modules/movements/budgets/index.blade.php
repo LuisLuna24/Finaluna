@@ -96,7 +96,8 @@
 
                         <x-m-menu-item icon="o-pencil" title="Editar"
                             link="{{ route('movements.budgets.edit', $budget->id) }}" />
-                        <x-m-menu-item icon="o-trash" title="Eliminar" wire:click="delete({{ $budget->id }})" />
+                        <x-m-menu-item icon="o-trash" title="Eliminar" wire:click="deleteBudget({{ $budget->id }})"
+                            wire:confirm="¿Estás seguro de eliminar este presupuesto?" />
 
                     </x-m-dropdown>
 

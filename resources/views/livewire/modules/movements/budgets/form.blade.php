@@ -405,16 +405,27 @@
                         </div>
                     </div>
                     {{-- TOTAL BUDGET ITEMS --}}
-                    <div class="flex justify-end">
+                    <div class="flex justify-end gap-2">
                         <div
                             class="flex w-full items-center justify-between gap-6 rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 sm:w-auto sm:min-w-[320px]">
                             <div>
                                 <p class="text-sm text-base-content/60">
-                                    Total distribuido
+                                    Total presupuestado
                                 </p>
                             </div>
                             <p class="text-2xl font-bold text-primary">
                                 ${{ number_format(collect($budgetItems)->sum('presupuesto'), 2) }}
+                            </p>
+                        </div>
+                        <div
+                            class="flex w-full items-center justify-between gap-6 rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 sm:w-auto sm:min-w-[320px]">
+                            <div>
+                                <p class="text-sm text-base-content/60">
+                                    Balance Presupuestal
+                                </p>
+                            </div>
+                            <p class="text-2xl font-bold text-primary">
+                                ${{ number_format(collect($incomes)->sum('amount') - collect($budgetItems)->sum('presupuesto'), 2) }}
                             </p>
                         </div>
                     </div>
