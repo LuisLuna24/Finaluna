@@ -16,7 +16,7 @@ class Budget extends Model
         'presupuesto',
         'gasto_real',
         'balance',
-        'notas',
+        'notes',
         'is_active',
     ];
 

@@ -46,12 +46,20 @@
                 $porcentajeVisual = min($porcentaje, 100);
                 $disponible = max($presupuesto - $gastoReal, 0);
                 $estado = match (true) {
-                    $porcentaje >= 100 => [
+                    $porcentaje >= 101 => [
                         'label' => 'Presupuesto excedido',
                         'class' => 'text-error',
                         'bg' => 'bg-error/10',
                         'bar' => 'bg-error',
                         'icon' => 'o-exclamation-triangle',
+                    ],
+
+                    $porcentaje >= 100 => [
+                        'label' => 'Presupuesto exelente',
+                        'class' => 'text-success',
+                        'bg' => 'bg-success/10',
+                        'bar' => 'bg-success',
+                        'icon' => 'o-check-circle',
                     ],
 
                     $porcentaje >= 80 => [
@@ -116,7 +124,7 @@
                                 link="{{ route('movements.budgets.edit', $item->budget_id) }}" />
 
                             <x-m-menu-item icon="o-trash" title="Eliminar partida"
-                                wire:click="removeExpense({{ $item->id }})"
+                                wire:click="removeBudgetItem({{ $item->id }})"
                                 wire:confirm="¿Estás seguro de eliminar esta partida?" />
 
                         </x-m-dropdown>

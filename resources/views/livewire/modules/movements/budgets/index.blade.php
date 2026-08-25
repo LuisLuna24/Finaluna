@@ -90,9 +90,9 @@
                             link="{{ route('movements.budgets.expenses', $budget->id) }}" />
 
                         <x-m-menu-item icon="o-arrow-trending-up" title="Nuevo ingreso"
-                            wire:click="newIncome({{ $budget->id }})" />
+                            wire:click.stop="newIncome({{ $budget->id }})" />
                         <x-m-menu-item icon="o-arrow-trending-down" title="Nuevo gasto"
-                            wire:click="newExpense({{ $budget->id }})" />
+                            wire:click.stop="newExpense({{ $budget->id }})" />
 
                         <x-m-menu-item icon="o-pencil" title="Editar"
                             link="{{ route('movements.budgets.edit', $budget->id) }}" />
@@ -219,5 +219,7 @@
 
     </div>
 
+    @livewire('modules.movements.expenses.form')
     @livewire('modules.movements.incomes.form')
+    
 </div>

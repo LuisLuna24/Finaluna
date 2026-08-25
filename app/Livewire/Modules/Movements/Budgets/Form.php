@@ -77,10 +77,10 @@ class Form extends Component
                 'name' => $budget->nombre,
                 'start_date' => $budget->fecha_inicio,
                 'end_date' => $budget->fecha_fin,
-                'notas' => $budget->notas,
+                'notes' => $budget->notas,
             ];
 
-            $this->incomes = $budget->incomes->map(fn (Income $income) => [
+            $this->incomes = $budget->incomes->map(fn(Income $income) => [
                 'method_id' => $income->payment_method_id,
                 'method' => $income->paymentMethod?->nombre ?? 'Desconocido',
                 'date' => $income->fecha,
@@ -90,7 +90,7 @@ class Form extends Component
                 'notes' => $income->notes,
             ])->values()->all();
 
-            $this->budgetItems = $budget->budgetItems->map(fn (BudgetItem $item) => [
+            $this->budgetItems = $budget->budgetItems->map(fn(BudgetItem $item) => [
                 'category_id' => $item->category_id,
                 'category_name' => $item->category?->nombre ?? 'N/A',
                 'subcategory_id' => $item->subcategory_id,
@@ -179,7 +179,7 @@ class Form extends Component
             'expense_type_id' => $this->budgetExpenseTypeId,
             'expense_type_name' => $expenseType ? $expenseType->nombre : 'N/A',
             'presupuesto' => (float) $this->budgetAmount,
-            'notas' => $this->budgetNotes,
+            'notas' => $this->budgetNotes ?? $subcategory->nombre ?? 'N/A',
         ];
 
         if ($this->editingBudgetItemIndex !== null) {

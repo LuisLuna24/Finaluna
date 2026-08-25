@@ -6,7 +6,6 @@ use App\Models\BudgetItem;
 use App\Models\Expense;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
 class Form extends Component
@@ -16,7 +15,6 @@ class Form extends Component
         'edit-expense' => 'editExpense',
     ];
 
-    #[Reactive]
     public ?int $budgetId = null;
 
     public bool $expenseModal = false;
@@ -40,12 +38,18 @@ class Form extends Component
         $this->budgetItemId = $budgetItemId;
     }
 
-    public function newExpense(?int $budgetItemId = null): void
+    public function newExpense(?int $budgetItemId = null, ?int $budgetId = null): void
     {
         $this->resetForm();
-        if ($budgetItemId) {
+
+        if ($budgetItemId !== null) {
             $this->budgetItemId = $budgetItemId;
         }
+
+        if ($budgetId !== null) {
+            $this->budgetId = $budgetId;
+        }
+
         $this->expenseModal = true;
     }
 

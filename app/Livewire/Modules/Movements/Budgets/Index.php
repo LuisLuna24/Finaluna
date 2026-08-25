@@ -4,6 +4,7 @@ namespace App\Livewire\Modules\Movements\Budgets;
 
 use App\Models\Budget;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
@@ -15,6 +16,14 @@ class Index extends Component
 
     public $search = '';
 
+    #[On('expense-saved')]
+    #[On('income-saved')]
+    public function refreshBudgets(): void
+    {
+        // Re-render is triggered automatically when this method is called
+    }
+
+    // Ingresos
     public function newIncome($id): void
     {
         $this->dispatch('new-income', $id);
@@ -24,6 +33,20 @@ class Index extends Component
     {
         $this->dispatch('edit-income', $id);
     }
+
+    // Gastos
+    public function newExpense(?int $budgetId = null): void
+    {
+        $this->dispatch('new-expense', budgetId: $budgetId);
+    }
+
+    public function editExpense(int $id): void
+    {
+        $this->dispatch('edit-expense', $id);
+    }
+
+
+    // Presupuestos
 
     public function deleteBudget($id): void
     {
