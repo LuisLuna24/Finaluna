@@ -117,7 +117,7 @@
                                 <x-m-button icon="o-ellipsis-vertical" class="btn-circle btn-ghost btn-sm" />
                             </x-slot:trigger>
 
-                            <x-m-menu-item icon="o-plus" title="Ver gastos"
+                            <x-m-menu-item icon="o-eye" title="Ver gastos"
                                 wire:click="viewExpense({{ $item->id }})" />
 
                             <x-m-menu-item icon="o-pencil" title="Editar partida"
@@ -227,4 +227,5 @@
     </div>
 
     @livewire('modules.movements.expenses.form', ['budgetId' => $id ?? null])
+    @livewire('modules.movements.expenses.view')
 </div>

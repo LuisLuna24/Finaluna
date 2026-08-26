@@ -38,6 +38,11 @@ class Index extends Component
         $this->dispatch('edit-expense', $id);
     }
 
+    public function viewExpense(int $expenseId): void
+    {
+        $this->dispatch('view-expense', $expenseId);
+    }
+
     public function removeExpense(int $id): void
     {
         $expense = Expense::find($id)->with(['budgetItem'])->first();
