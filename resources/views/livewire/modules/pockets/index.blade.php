@@ -47,11 +47,11 @@
 
             <article
                 class="group relative overflow-hidden rounded-2xl border bg-base-100 p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg
-            {{ $excedido ? 'border-error/30' : 'border-base-200' }}">
+            {{ $excedido ? 'border-success/30' : 'border-base-200' }}">
 
                 {{-- Indicador superior --}}
                 <div class="absolute inset-x-0 top-0 h-1
-                {{ $excedido ? 'bg-error' : 'bg-primary' }}">
+                {{ $excedido ? 'bg-success' : 'bg-primary' }}">
                 </div>
 
                 {{-- Encabezado --}}
@@ -60,7 +60,7 @@
                         <div class="flex items-center gap-2">
                             <div
                                 class="flex size-9 shrink-0 items-center justify-center rounded-xl
-                            {{ $excedido ? 'bg-error/10 text-error' : 'bg-primary/10 text-primary' }}">
+                            {{ $excedido ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary' }}">
                                 <x-m-icon name="o-wallet" class="size-5" />
                             </div>
 
@@ -70,7 +70,7 @@
                                     {{ $pocket->nombre }}
                                 </h3>
                                 <p class="mt-0.5 text-xs text-base-content/50">
-                                    {{ $pocket->fecha_inicio }} - {{ $budget->fecha_fin }}
+                                    {{ $pocket->fecha_inicio }} - {{ $pocket->fecha_fin }}
                                 </p>
                             </div>
                         </div>
@@ -82,8 +82,7 @@
                             <x-m-button icon="o-ellipsis-vertical" class="btn-circle btn-ghost btn-sm" />
                         </x-slot:trigger>
 
-                        <x-m-menu-item icon="o-arrow-trending-up" title="Abonar"
-                            wire:click.stop="newPocketItem({{ $pocket->id }})" />
+                        <x-m-menu-item icon="o-banknotes" title="Abonar" wire:click="addMoney({{ $pocket->id }})" />
 
                         <x-m-menu-item icon="o-pencil" title="Editar"
                             link="{{ route('pockets.edit', $pocket->id) }}" />
@@ -94,18 +93,18 @@
 
                 </div>
 
-                {{-- Gasto principal --}}
+                {{-- Ahorro principal --}}
                 <div class="mt-7">
                     <div class="flex items-end justify-between gap-3">
                         <div>
                             <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">
-                                Gastado
+                                Ahorrado
                             </p>
                             <p
                                 class="mt-1 text-3xl font-bold tracking-tight
-                            {{ $excedido ? 'text-error' : 'text-base-content' }}">
+                            {{ $excedido ? 'text-success' : 'text-base-content' }}">
 
-                                ${{ number_format($pocket->meta_apartado, 2) }}
+                                ${{ number_format($pocket->apartado, 2) }}
                             </p>
                         </div>
 
@@ -113,12 +112,12 @@
                         <div class="text-right">
                             <p
                                 class="text-2xl font-bold
-                            {{ $excedido ? 'text-error' : 'text-primary' }}">
+                            {{ $excedido ? 'text-success' : 'text-primary' }}">
 
                                 {{ number_format($porcentaje, 0) }}%
                             </p>
                             <p class="text-xs text-base-content/50">
-                                utilizado
+                                de tu meta
                             </p>
                         </div>
                     </div>
@@ -130,7 +129,7 @@
                     <div class="mb-2 flex items-center justify-between">
 
                         <span class="text-xs text-base-content/50">
-                            Presupuesto
+                            Meta
                         </span>
 
                         <span class="text-xs font-medium text-base-content/70">
@@ -139,7 +138,7 @@
 
                     </div>
                     <x-m-progress value="{{ min($porcentaje, 100) }}" max="100"
-                        class="{{ $excedido ? 'progress-error' : 'progress-primary' }}" />
+                        class="{{ $excedido ? 'progress-success' : 'progress-primary' }}" />
 
                 </div>
 
@@ -159,11 +158,11 @@
                     </div>
                     <div class="rounded-xl bg-base-200/50 p-3 text-right">
                         <p class="text-xs text-base-content/50">
-                            {{ $excedido ? 'Excedente' : 'Disponible' }}
+                            {{ $excedido ? 'Excedente' : 'Faltante' }}
                         </p>
                         <p
                             class="mt-1 text-sm font-semibold
-                        {{ $excedido ? 'text-error' : 'text-base-content' }}">
+                        {{ $excedido ? 'text-success' : 'text-base-content' }}">
 
                             ${{ number_format(abs($restante), 2) }}
 
@@ -173,17 +172,18 @@
 
                 {{-- Estado --}}
                 <div class="mt-4 flex items-center gap-2">
-                    <span class="size-2 rounded-full
-                    {{ $excedido ? 'bg-error' : 'bg-success' }}">
+                    <span
+                        class="size-2 rounded-full
+                    {{ $excedido ? 'bg-success' : 'bg-success' }}">
                     </span>
 
                     @if ($excedido)
-                        <span class="text-xs font-medium text-error">
-                            Presupuesto excedido
+                        <span class="text-xs font-medium text-success">
+                            Meta superada
                         </span>
                     @else
                         <span class="text-xs text-base-content/60">
-                            Dentro del presupuesto
+                            En camino a tu meta
                         </span>
                     @endif
                 </div>
@@ -208,4 +208,6 @@
             </div>
         @endforelse
     </div>
+
+    @include('modules.pockets.pocket-items-form')
 </div>

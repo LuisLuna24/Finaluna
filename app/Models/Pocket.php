@@ -11,10 +11,11 @@ class Pocket extends Model
     protected $fillable = [
         'user_id',
         'icon_id',
+        'nombre',
         'fecha_inicio',
         'fecha_fin',
         'meta_apartado',
-        'is_active'
+        'is_active',
     ];
 
     public function user()

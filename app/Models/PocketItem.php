@@ -13,7 +13,7 @@ class PocketItem extends Model
         'payment_method_id',
         'descripcion',
         'fecha',
-        'monto'
+        'monto',
     ];
 
     public function pocket()
@@ -23,7 +23,7 @@ class PocketItem extends Model
 
     public function paymentMethod()
     {
-        return $this->belongsTo(PaymentMehod::class);
+        return $this->belongsTo(PaymentMethod::class);
     }
 
     public function budgets()

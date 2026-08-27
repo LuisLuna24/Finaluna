@@ -4,9 +4,8 @@
         {{-- FORM FIELDS --}}
         <div class="space-y-4">
             <div class="space-y-2">
-                <x-m-group label="Tipo de Gasto" wire:model.live="budgetItemForm.budgetExpenseTypeId"
-                    :options="$budgetItemForm->getExpenseTypes()" option-label="nombre" option-value="id"
-                    class="[&:checked]:!btn-primary max-w-full" />
+                <x-m-group label="Tipo de Gasto" wire:model.live="budgetItemForm.budgetExpenseTypeId" :options="$budgetItemForm->getExpenseTypes()"
+                    option-label="nombre" option-value="id" class="[&:checked]:!btn-primary max-w-full" />
             </div>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -16,12 +15,11 @@
                     wire:model="budgetItemForm.budgetSubcategoryId" placeholder="Opcional..." />
             </div>
 
-            <x-m-input label="Presupuesto Asignado" prefix="$" wire:model="budgetItemForm.budgetAmount" type="number"
-                step="0.01" placeholder="0.00" />
+            <x-m-input label="Presupuesto Asignado" prefix="$" wire:model="budgetItemForm.budgetAmount"
+                type="number" step="0.01" placeholder="0.00" />
 
-            <x-m-textarea label="Notas (opcional)"
-                placeholder="Agrega información adicional sobre esta partida..." wire:model="budgetItemForm.budgetNotes"
-                rows="3" />
+            <x-m-textarea label="Notas (opcional)" placeholder="Agrega información adicional sobre esta partida..."
+                wire:model="budgetItemForm.budgetNotes" rows="3" />
         </div>
     </div>
 
@@ -29,6 +27,6 @@
         <x-m-button label="Cancelar" wire:click="$set('budgetItemForm.modal', false)" />
         <x-m-button label="{{ $budgetItemForm->editingId !== null ? 'Guardar cambios' : 'Agregar partida' }}"
             icon="{{ $budgetItemForm->editingId !== null ? 'o-check' : 'o-plus-circle' }}" class="btn-primary"
-            wire:click="saveBudgetItem" />
+            wire:click="saveBudgetItem"spinner="saveBudgetItem" />
     </x-slot:actions>
 </x-m-modal>
