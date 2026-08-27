@@ -23,6 +23,10 @@
                     :current="request()->routeIs('movements.*')" wire:navigate>
                     {{ __('Presupuestos') }}
                 </flux:sidebar.item>
+                <flux:sidebar.item icon="squares-plus" :href="route('pockets.index')"
+                    :current="request()->routeIs('pockets.*')" wire:navigate>
+                    {{ __('Apartados') }}
+                </flux:sidebar.item>
                 <flux:sidebar.group expandable :heading="__('Catalogos')" class="grid"
                     :expanded="request()->routeIs('catalogs.*')">
                     <flux:sidebar.item :href="route('catalogs.icons')" :current="request()->routeIs('catalogs.icons')"

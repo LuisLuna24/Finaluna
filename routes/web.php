@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Budget;
+use App\Models\Pocket;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +48,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
             return view('modules.movements.expenses.index', ['id' => $id]);
         })->name('budgets.expenses');
     });
+
+    Route::prefix('pockets')->name('pockets.')->group(function () {
+        Route::view('pockets', 'modules.pockets.index')->name('index');
+        Route::view('pockets/create', 'modules.pockets.form')->name('create');
+        Route::get('pockets/edit/{id}', function (int $id) {
+            abort_unless(
+                Pocket::where('id', $id)->where('user_id', Auth::user()->id)->exists(),
+                404
+            );
+
+            return view('modules.pockets.form', ['id' => $id]);
+        })->name('edit');
+    });
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';
