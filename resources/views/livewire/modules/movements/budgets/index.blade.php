@@ -219,7 +219,7 @@
 
     </div>
 
-    @livewire('modules.movements.expenses.form')
-    @livewire('modules.movements.incomes.form')
-    
+    @include('modules.movements.expenses.form')
+    @include('modules.movements.incomes.form')
+
 </div>

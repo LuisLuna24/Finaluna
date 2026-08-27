@@ -1,27 +1,22 @@
 <?php
 
-namespace App\Livewire\Modules\Movements\Expenses;
+namespace App\Livewire\Forms\Expenses;
 
 use App\Models\BudgetItem;
 use App\Models\Expense;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
+use Livewire\Form;
 
-class Form extends Component
+class ExpenseForm extends Form
 {
-    protected $listeners = [
-        'new-expense' => 'newExpense',
-        'edit-expense' => 'editExpense',
-    ];
+    public bool $modal = false;
 
     public ?int $budgetId = null;
 
-    public bool $expenseModal = false;
-
     public ?int $budgetItemId = null;
 
-    public ?int $editingExpenseIndex = null;
+    public ?int $editingId = null;
 
     public string $expenseMethod = '';
 
@@ -33,42 +28,29 @@ class Form extends Component
 
     public string $expenseNotes = '';
 
-    public function mount(?int $budgetItemId = null): void
+    public function openNew(?int $budgetItemId = null): void
     {
+        $this->reset();
         $this->budgetItemId = $budgetItemId;
+        $this->expenseDate = now()->format('Y-m-d\TH:i');
+        $this->modal = true;
     }
 
-    public function newExpense(?int $budgetItemId = null, ?int $budgetId = null): void
-    {
-        $this->resetForm();
-
-        if ($budgetItemId !== null) {
-            $this->budgetItemId = $budgetItemId;
-        }
-
-        if ($budgetId !== null) {
-            $this->budgetId = $budgetId;
-        }
-
-        $this->expenseModal = true;
-    }
-
-    public function editExpense(int $id): void
+    public function openEdit(int $id): void
     {
         $expense = Expense::findOrFail($id);
 
-        $this->editingExpenseIndex = $id;
+        $this->editingId = $id;
         $this->budgetItemId = $expense->budget_item_id;
         $this->expenseMethod = (string) $expense->payment_method_id;
         $this->expenseAmount = (string) $expense->total;
         $this->expenseDate = $expense->fecha;
         $this->expenseDescription = $expense->descripcion;
         $this->expenseNotes = $expense->notes ?? '';
-
-        $this->expenseModal = true;
+        $this->modal = true;
     }
 
-    public function addExpense(): void
+    public function save(): void
     {
         $this->validate([
             'budgetItemId' => 'required|exists:budget_items,id',
@@ -90,44 +72,33 @@ class Form extends Component
             'is_active' => true,
         ];
 
-        if ($this->editingExpenseIndex !== null) {
-            Expense::findOrFail($this->editingExpenseIndex)->update($data);
+        if ($this->editingId !== null) {
+            Expense::findOrFail($this->editingId)->update($data);
             BudgetItem::where('id', $this->budgetItemId)->decrement('gasto_real', $this->expenseAmount);
         } else {
             Expense::create($data);
             BudgetItem::where('id', $this->budgetItemId)->increment('gasto_real', $this->expenseAmount);
         }
 
-        $this->expenseModal = false;
-        $this->resetForm();
-        $this->dispatch('expense-saved');
+        $this->modal = false;
+        $this->reset();
     }
 
-    public function getPaymentMethodsProperty()
+    public function getPaymentMethods(): array
     {
-        return PaymentMethod::where('is_active', true)->get();
+        return PaymentMethod::where('is_active', true)->get()->toArray();
     }
 
-    public function getBudgetItemsProperty()
+    public function getBudgetItems(): array
     {
+        if ($this->budgetId === null) {
+            return [];
+        }
+
         return BudgetItem::query()
             ->with(['category', 'expenseType', 'budget'])
             ->where('budget_id', $this->budgetId)
-            ->get();
-    }
-
-    public function render()
-    {
-        return view('livewire.modules.movements.expenses.form');
-    }
-
-    private function resetForm(): void
-    {
-        $this->editingExpenseIndex = null;
-        $this->expenseMethod = '';
-        $this->expenseAmount = '';
-        $this->expenseDate = now()->format('Y-m-d\TH:i');
-        $this->expenseDescription = '';
-        $this->expenseNotes = '';
+            ->get()
+            ->toArray();
     }
 }

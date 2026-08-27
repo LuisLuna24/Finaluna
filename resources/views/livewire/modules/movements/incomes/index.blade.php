@@ -189,5 +189,5 @@
         @endforelse
     </div>
 
-    @livewire('modules.movements.incomes.form', ['id' => $id ?? null])
+    @include('modules.movements.incomes.form')
 </div>

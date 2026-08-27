@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Modules\Movements\Incomes;
 
+use App\Livewire\Forms\Incomes\IncomeForm;
 use App\Models\Income;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Lazy;
-use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -20,20 +20,24 @@ class Index extends Component
     #[Reactive]
     public ?int $id = null;
 
-    #[On('income-saved')]
-    public function refreshIncomes(): void
-    {
-        // Re-render is triggered automatically when this method is called
-    }
+    public IncomeForm $incomeForm;
 
     public function newIncome(): void
     {
-        $this->dispatch('new-income');
+        $this->incomeForm->budgetId = $this->id;
+        $this->incomeForm->openNew($this->id);
     }
 
     public function editIncome($id): void
     {
-        $this->dispatch('edit-income', $id);
+        $this->incomeForm->budgetId = $this->id;
+        $this->incomeForm->openEdit($id);
+    }
+
+    public function saveIncome(): void
+    {
+        $this->incomeForm->save();
+        $this->dispatch('income-saved');
     }
 
     public function removeIncome($id): void

@@ -118,10 +118,7 @@
                             </x-slot:trigger>
 
                             <x-m-menu-item icon="o-eye" title="Ver gastos"
-                                wire:click="viewExpense({{ $item->id }})" />
-
-                            <x-m-menu-item icon="o-pencil" title="Editar partida"
-                                link="{{ route('movements.budgets.edit', $item->budget_id) }}" />
+                                wire:click.stop="viewExpense({{ $item->id }})" />
 
                             <x-m-menu-item icon="o-trash" title="Eliminar partida"
                                 wire:click="removeBudgetItem({{ $item->id }})"
@@ -226,6 +223,16 @@
         @endforelse
     </div>
 
-    @livewire('modules.movements.expenses.form', ['budgetId' => $id ?? null])
-    @livewire('modules.movements.expenses.view')
+    <x-m-modal wire:model="modalView" title="Ver gastos de la partida presupuestal">
+        <div class="space-y-6">
+
+            <x-m-table :headers="$headers" :rows="$expenses" />
+
+            <x-slot:actions>
+                <x-m-button label="Cerrar" wire:click="$set('modalView', false)" />
+            </x-slot:actions>
+
+    </x-m-modal>
+
+    @include('modules.movements.expenses.form')
 </div>

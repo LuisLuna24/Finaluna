@@ -2,12 +2,10 @@
 
 namespace App\Livewire\Modules\Movements\Expenses;
 
+use App\Livewire\Forms\Expenses\ExpenseForm;
 use App\Models\Budget;
 use App\Models\BudgetItem;
 use App\Models\Expense;
-use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
@@ -19,28 +17,36 @@ class Index extends Component
 
     public string $search = '';
 
-    #[Reactive]
     public ?int $id = null;
 
-    #[On('expense-saved')]
-    public function refreshExpenses(): void
-    {
-        // Re-render is triggered automatically when this method is called
-    }
+    public ExpenseForm $expenseForm;
+
+    public bool $modalView = false;
+
+    public ?int $expenseId = null;
 
     public function newExpense(?int $budgetItemId = null): void
     {
-        $this->dispatch('new-expense', $budgetItemId);
+        $this->expenseForm->budgetId = $this->id;
+        $this->expenseForm->openNew($budgetItemId);
     }
 
     public function editExpense(int $id): void
     {
-        $this->dispatch('edit-expense', $id);
+        $this->expenseForm->budgetId = $this->id;
+        $this->expenseForm->openEdit($id);
+    }
+
+    public function saveExpense(): void
+    {
+        $this->expenseForm->save();
+        $this->dispatch('expense-saved');
     }
 
     public function viewExpense(int $expenseId): void
     {
-        $this->dispatch('view-expense', $expenseId);
+        $this->expenseId = $expenseId;
+        $this->modalView = true;
     }
 
     public function removeExpense(int $id): void
@@ -69,12 +75,24 @@ class Index extends Component
 
     public function render()
     {
+        $headers = [
+            ['key' => 'id', 'label' => '#'],
+            ['key' => 'descripcion', 'label' => 'Descripción'],
+            ['key' => 'total', 'label' => 'Monto'],
+            ['key' => 'fecha', 'label' => 'Fecha'],
+            ['key' => 'paymentMethod.nombre', 'label' => 'Método de pago']
+        ];
+
+        $expenses = $this->expenseId
+            ? Expense::query()->with(['paymentMethod'])->where('budget_item_id', $this->expenseId)->paginate(10)
+            : Expense::query()->whereRaw('0 = 1')->paginate(10);
+
         $budgetsItems = BudgetItem::query()
             ->with(['budget', 'category', 'expenseType', 'category.icon', 'expenses.paymentMethod'])
             ->where('budget_id', $this->id)
             ->where('notas', 'like', '%' . $this->search . '%')
             ->paginate(15);
 
-        return view('livewire.modules.movements.expenses.index', compact('budgetsItems'));
+        return view('livewire.modules.movements.expenses.index', compact('budgetsItems', 'headers', 'expenses'));
     }
 }

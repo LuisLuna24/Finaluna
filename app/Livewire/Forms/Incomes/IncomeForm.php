@@ -1,24 +1,19 @@
 <?php
 
-namespace App\Livewire\Modules\Movements\Incomes;
+namespace App\Livewire\Forms\Incomes;
 
 use App\Models\Income;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
+use Livewire\Form;
 
-class Form extends Component
+class IncomeForm extends Form
 {
-    protected $listeners = [
-        'new-income' => 'newIncome',
-        'edit-income' => 'editIncome',
-    ];
-
-    public bool $incomeModal = false;
+    public bool $modal = false;
 
     public ?int $budgetId = null;
 
-    public ?int $editingIncomeIndex = null;
+    public ?int $editingId = null;
 
     public string $incomeMethod = '';
 
@@ -32,36 +27,31 @@ class Form extends Component
 
     public string $incomeNotes = '';
 
-    public function mount(?int $id = null): void
+    public function openNew(?int $budgetId = null): void
     {
-        $this->budgetId = $id;
-    }
-
-    public function newIncome(?int $id = null): void
-    {
-        $this->resetForm();
-        if ($id) {
-            $this->budgetId = $id;
+        $this->reset();
+        if ($budgetId) {
+            $this->budgetId = $budgetId;
         }
-        $this->incomeModal = true;
+        $this->incomeDate = now()->format('Y-m-d\TH:i');
+        $this->modal = true;
     }
 
-    public function editIncome(int $id): void
+    public function openEdit(int $id): void
     {
         $income = Income::findOrFail($id);
 
-        $this->editingIncomeIndex = $id;
+        $this->editingId = $id;
         $this->incomeMethod = (string) $income->payment_method_id;
         $this->incomeAmount = (string) $income->total;
         $this->incomeDate = $income->fecha;
         $this->incomeDescription = $income->descripcion;
         $this->incomeSavingsAllocation = $income->porcentaje_ahorro;
         $this->incomeNotes = $income->notes ?? '';
-
-        $this->incomeModal = true;
+        $this->modal = true;
     }
 
-    public function addIncome(): void
+    public function save(): void
     {
         $this->validate([
             'incomeMethod' => 'required|exists:payment_methods,id',
@@ -84,35 +74,18 @@ class Form extends Component
             'is_active' => true,
         ];
 
-        if ($this->editingIncomeIndex !== null) {
-            Income::findOrFail($this->editingIncomeIndex)->update($data);
+        if ($this->editingId !== null) {
+            Income::findOrFail($this->editingId)->update($data);
         } else {
             Income::create($data);
         }
 
-        $this->incomeModal = false;
-        $this->resetForm();
-        $this->dispatch('income-saved');
+        $this->modal = false;
+        $this->reset();
     }
 
-    public function getPaymentMethodsProperty()
+    public function getPaymentMethods(): array
     {
-        return PaymentMethod::where('is_active', true)->get();
-    }
-
-    public function render()
-    {
-        return view('livewire.modules.movements.incomes.form');
-    }
-
-    private function resetForm(): void
-    {
-        $this->editingIncomeIndex = null;
-        $this->incomeMethod = '';
-        $this->incomeAmount = '';
-        $this->incomeDate = now()->format('Y-m-d\TH:i');
-        $this->incomeDescription = '';
-        $this->incomeSavingsAllocation = 0;
-        $this->incomeNotes = '';
+        return PaymentMethod::where('is_active', true)->get()->toArray();
     }
 }

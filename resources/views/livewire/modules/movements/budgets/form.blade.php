@@ -67,7 +67,7 @@
                     <x-m-header title="Ingresos" separator>
                         <x-slot:actions>
                             <x-m-button label="Agregar ingreso" icon="o-plus" class="btn-primary"
-                                wire:click="$set('incomeModal', true)" />
+                                wire:click="newIncome" />
                         </x-slot:actions>
                     </x-m-header>
 
@@ -210,7 +210,7 @@
                                                     <div class="mt-5">
                                                         <x-m-button label="Agregar primer ingreso" icon="o-plus"
                                                             class="btn-primary"
-                                                            wire:click="$set('incomeModal', true)" />
+                                                            wire:click="newIncome" />
                                                     </div>
                                                 </div>
                                             </td>
@@ -249,7 +249,7 @@
                     <x-m-header title="Partidas Presupuestales" separator>
                         <x-slot:actions>
                             <x-m-button label="Agregar partida" icon="o-plus" class="btn-primary"
-                                wire:click="$set('budgetItemModal', true)" />
+                                wire:click="newBudgetItem" />
                         </x-slot:actions>
                     </x-m-header>
 
@@ -394,7 +394,7 @@
                                                     <div class="mt-5">
                                                         <x-m-button label="Agregar primera partida" icon="o-plus"
                                                             class="btn-primary"
-                                                            wire:click="$set('budgetItemModal', true)" />
+                                                            wire:click="newBudgetItem" />
                                                     </div>
                                                 </div>
                                             </td>
@@ -461,7 +461,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-base-content/60">Notas</p>
-                                    <p class="font-medium">{{ $budget['notas'] ?: 'No definido' }}</p>
+                                    <p class="font-medium">{{ $budget['notes'] ?: 'No definido' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -576,114 +576,8 @@
 
 
     {{-- INCOME MODAL --}}
-    <x-m-modal wire:model="incomeModal"
-        title="{{ $editingIncomeIndex !== null ? 'Editar ingreso' : 'Registrar ingreso' }}">
-        <div class="space-y-6">
-            {{-- BASIC DATA --}}
-            <div class="space-y-4">
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <x-m-select label="Método de pago" :options="$this->paymentMethods" option-label="nombre" option-value="id"
-                        wire:model="incomeMethod" placeholder="Selecciona un método..." />
-                    <x-m-input label="Monto" prefix="$" wire:model.live="incomeAmount" type="number"
-                        step="0.01" placeholder="0.00" />
-                </div>
-                <x-m-datetime label="Fecha del ingreso" wire:model="incomeDate" />
-                <x-m-input label="Descripción" placeholder="Ej. Pago de cliente, salario, venta..."
-                    wire:model="incomeDescription" />
-            </div>
-
-            {{-- SAVINGS --}}
-            <div class="rounded-2xl border border-base-300 bg-base-200/30 p-5">
-
-                <div class="flex items-center justify-between gap-4">
-
-                    <div class="flex items-center gap-3">
-
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-                            <x-m-icon name="o-banknotes" class="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                            <p class="font-semibold">
-                                Ahorro
-                            </p>
-                            <p class="text-xs text-base-content/50">
-                                Porcentaje destinado al ahorro
-                            </p>
-                        </div>
-                    </div>
-                    <span class="text-2xl font-bold text-primary">
-                        {{ $incomeSavingsAllocation }}%
-                    </span>
-
-                </div>
-
-                <div class="mt-5">
-                    <x-m-range wire:model.live="incomeSavingsAllocation" min="0" max="100"
-                        class="range-primary" step="1" />
-                </div>
-
-                <div class="mt-4 flex items-start gap-3 rounded-xl bg-primary/10 p-4 text-sm text-primary">
-                    <x-m-icon name="o-information-circle" class="mt-0.5 h-5 w-5 shrink-0" />
-                    <span>
-                        Se depositarán
-                        <strong>
-                            ${{ number_format((floatval($incomeAmount ?: 0) * intval($incomeSavingsAllocation)) / 100, 2) }}
-                        </strong>
-                        en tus bolsillos de ahorro.
-                    </span>
-                </div>
-            </div>
-            {{-- NOTES --}}
-            <x-m-textarea label="Notas (opcional)" placeholder="Agrega información adicional sobre este ingreso..."
-                wire:model="incomeNotes" rows="3" />
-
-        </div>
-
-        <x-slot:actions>
-            <x-m-button label="Cancelar" wire:click="$set('incomeModal', false)" />
-            <x-m-button label="{{ $editingIncomeIndex !== null ? 'Guardar cambios' : 'Registrar ingreso' }}"
-                icon="{{ $editingIncomeIndex !== null ? 'o-check' : 'o-plus-circle' }}" class="btn-primary"
-                wire:click="addIncome" />
-        </x-slot:actions>
-
-    </x-m-modal>
+    @include('modules.movements.incomes.form')
 
     {{-- BUDGET ITEM MODAL --}}
-    <x-m-modal wire:model="budgetItemModal"
-        title="{{ $editingBudgetItemIndex !== null ? 'Editar Partida Presupuestal' : 'Agregar Partida Presupuestal' }}">
-        <div class="space-y-6">
-            {{-- FORM FIELDS --}}
-            <div class="space-y-4">
-
-                <div class="space-y-2">
-                    <x-m-group label="Tipo de Gasto" wire:model.live="budgetExpenseTypeId" :options="$this->expenseTypes"
-                        option-label="nombre" option-value="id" class="[&:checked]:!btn-primary max-w-full" />
-                </div>
-
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <x-m-select label="Categoría" :options="$this->categories" option-label="nombre" option-value="id"
-                        wire:model.live="budgetCategoryId" placeholder="Selecciona..." />
-                    <x-m-select label="Subcategoría" :options="$this->subcategories" option-label="nombre" option-value="id"
-                        wire:model="budgetSubcategoryId" placeholder="Opcional..." />
-                </div>
-
-                <x-m-input label="Presupuesto Asignado" prefix="$" wire:model="budgetAmount" type="number"
-                    step="0.01" placeholder="0.00" />
-
-                <x-m-textarea label="Notas (opcional)"
-                    placeholder="Agrega información adicional sobre esta partida..." wire:model="budgetNotes"
-                    rows="3" />
-
-            </div>
-
-        </div>
-
-        <x-slot:actions>
-            <x-m-button label="Cancelar" wire:click="$set('budgetItemModal', false)" />
-            <x-m-button label="{{ $editingBudgetItemIndex !== null ? 'Guardar cambios' : 'Agregar partida' }}"
-                icon="{{ $editingBudgetItemIndex !== null ? 'o-check' : 'o-plus-circle' }}" class="btn-primary"
-                wire:click="addBudgetItem" />
-        </x-slot:actions>
-
-    </x-m-modal>
+    @include('modules.movements.budgets.budget-item-form')
 </div>

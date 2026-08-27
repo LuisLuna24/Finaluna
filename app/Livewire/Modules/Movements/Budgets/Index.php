@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Modules\Movements\Budgets;
 
+use App\Livewire\Forms\Expenses\ExpenseForm;
+use App\Livewire\Forms\Incomes\IncomeForm;
 use App\Models\Budget;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
@@ -16,6 +18,10 @@ class Index extends Component
 
     public $search = '';
 
+    public ExpenseForm $expenseForm;
+
+    public IncomeForm $incomeForm;
+
     #[On('expense-saved')]
     #[On('income-saved')]
     public function refreshBudgets(): void
@@ -23,30 +29,41 @@ class Index extends Component
         // Re-render is triggered automatically when this method is called
     }
 
-    // Ingresos
-    public function newIncome($id): void
+    public function newIncome(int $budgetId): void
     {
-        $this->dispatch('new-income', $id);
+        $this->incomeForm->budgetId = $budgetId;
+        $this->incomeForm->openNew($budgetId);
     }
 
-    public function editIncome($id): void
+    public function editIncome(int $id): void
     {
-        $this->dispatch('edit-income', $id);
+        $this->incomeForm->budgetId = null;
+        $this->incomeForm->openEdit($id);
     }
 
-    // Gastos
+    public function saveIncome(): void
+    {
+        $this->incomeForm->save();
+        $this->dispatch('income-saved');
+    }
+
     public function newExpense(?int $budgetId = null): void
     {
-        $this->dispatch('new-expense', budgetId: $budgetId);
+        $this->expenseForm->budgetId = $budgetId;
+        $this->expenseForm->openNew();
     }
 
     public function editExpense(int $id): void
     {
-        $this->dispatch('edit-expense', $id);
+        $this->expenseForm->budgetId = null;
+        $this->expenseForm->openEdit($id);
     }
 
-
-    // Presupuestos
+    public function saveExpense(): void
+    {
+        $this->expenseForm->save();
+        $this->dispatch('expense-saved');
+    }
 
     public function deleteBudget($id): void
     {
