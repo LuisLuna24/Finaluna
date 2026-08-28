@@ -53,17 +53,18 @@ class Form extends Component
                 'notes' => $budget->notas,
             ];
 
-            $this->incomes = $budget->incomes->map(fn (Income $income) => [
+            $this->incomes = $budget->incomes->map(fn(Income $income) => [
                 'method_id' => $income->payment_method_id,
                 'method' => $income->paymentMethod?->nombre ?? 'Desconocido',
                 'date' => $income->fecha,
                 'amount' => (float) $income->total,
                 'description' => $income->descripcion,
                 'savings_allocation' => $income->porcentaje_ahorro,
+                'savings_total' => $income->total_ahorro,
                 'notes' => $income->notes ?? '',
             ])->values()->all();
 
-            $this->budgetItems = $budget->budgetItems->map(fn (BudgetItem $item) => [
+            $this->budgetItems = $budget->budgetItems->map(fn(BudgetItem $item) => [
                 'category_id' => $item->category_id,
                 'category_name' => $item->category?->nombre ?? 'N/A',
                 'subcategory_id' => $item->subcategory_id,
@@ -112,6 +113,7 @@ class Form extends Component
             'amount' => (float) $this->incomeForm->incomeAmount,
             'description' => $this->incomeForm->incomeDescription,
             'savings_allocation' => $this->incomeForm->incomeSavingsAllocation,
+            'savings_total' => $this->incomeForm->incomeSavingsAllocation * $this->incomeForm->incomeAmount / 100,
             'notes' => $this->incomeForm->incomeNotes,
         ];
 
@@ -253,6 +255,7 @@ class Form extends Component
                     'descripcion' => $incomeData['description'],
                     'total' => $incomeData['amount'],
                     'porcentaje_ahorro' => $incomeData['savings_allocation'],
+                    'total_ahorro' => $incomeData['savings_total'],
                     'notes' => $incomeData['notes'],
                     'is_active' => true,
                 ]);

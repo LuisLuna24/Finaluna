@@ -18,6 +18,7 @@ class Income extends Model
         'porcentaje_ahorro',
         'notes',
         'is_active',
+        'total_ahorro',
     ];
 
     public function user()

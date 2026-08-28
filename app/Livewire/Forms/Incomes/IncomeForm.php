@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms\Incomes;
 
+use App\Models\BudgetItem;
 use App\Models\Income;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,7 @@ class IncomeForm extends Form
     public int $incomeSavingsAllocation = 0;
 
     public string $incomeNotes = '';
+
 
     public function openNew(?int $budgetId = null): void
     {
@@ -87,5 +89,10 @@ class IncomeForm extends Form
     public function getPaymentMethods(): array
     {
         return PaymentMethod::where('is_active', true)->get()->toArray();
+    }
+
+    public function getBudgetItems(): array
+    {
+        return BudgetItem::where('budget_id', $this->budgetId)->get()->toArray();
     }
 }

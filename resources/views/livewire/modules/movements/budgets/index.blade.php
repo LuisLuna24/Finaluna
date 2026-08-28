@@ -44,7 +44,7 @@
                 $porcentaje = $budget->presupuesto > 0 ? ($budget->gasto / $budget->presupuesto) * 100 : 0;
 
                 $excedido = $budget->gasto > $budget->presupuesto;
-                $restante = $budget->presupuesto - $budget->gasto;
+                $restante = $budget->ingreso - $budget->gasto - $budget->total_ahorro;
             @endphp
 
             <article

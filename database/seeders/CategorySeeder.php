@@ -12,6 +12,12 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('payment_methods')->insert([
+            ['id' => 1, 'nombre' => 'Efectivo', 'is_active' => 1, 'created_at' => '2026-08-22 20:21:52', 'updated_at' => '2026-08-22 20:21:52'],
+            ['id' => 2, 'nombre' => 'Tarjeta Credito', 'is_active' => 1, 'created_at' => '2026-08-22 20:21:52', 'updated_at' => '2026-08-22 20:21:52'],
+            ['id' => 3, 'nombre' => 'Tarjeta Debito', 'is_active' => 1, 'created_at' => '2026-08-22 20:21:52', 'updated_at' => '2026-08-22 20:21:52'],
+        ]);
+
         DB::table('categories')->insert([
             ['id' => 1, 'icon_id' => 1, 'nombre' => 'Hogar', 'is_active' => 1, 'created_at' => '2026-08-22 20:21:52', 'updated_at' => '2026-08-22 20:21:52', 'expense_type_id' => 1],
             ['id' => 2, 'icon_id' => 10, 'nombre' => 'Alimentos', 'is_active' => 1, 'created_at' => '2026-08-22 20:37:35', 'updated_at' => '2026-08-22 20:37:35', 'expense_type_id' => 1],

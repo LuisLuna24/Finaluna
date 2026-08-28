@@ -6,6 +6,8 @@ use App\Models\BudgetItem;
 use App\Models\Expense;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Reactive;
 use Livewire\Form;
 
 class ExpenseForm extends Form
@@ -30,7 +32,7 @@ class ExpenseForm extends Form
 
     public function openNew(?int $budgetItemId = null): void
     {
-        $this->reset();
+        $this->resetForm();
         $this->budgetItemId = $budgetItemId;
         $this->expenseDate = now()->format('Y-m-d\TH:i');
         $this->modal = true;
@@ -82,6 +84,19 @@ class ExpenseForm extends Form
 
         $this->modal = false;
         $this->reset();
+    }
+
+    public function resetForm(): void
+    {
+        $this->reset([
+            'budgetItemId',
+            'editingId',
+            'expenseMethod',
+            'expenseAmount',
+            'expenseDate',
+            'expenseDescription',
+            'expenseNotes',
+        ]);
     }
 
     public function getPaymentMethods(): array

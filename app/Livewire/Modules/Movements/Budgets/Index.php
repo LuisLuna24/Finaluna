@@ -90,6 +90,7 @@ class Index extends Component
                 return $item->expenses->sum('total');
             });
             $budget->ingreso = $budget->incomes->sum('total');
+            $budget->total_ahorro = $budget->incomes->sum('total_ahorro');
         });
 
         return view('livewire.modules.movements.budgets.index', compact('budgets', 'headers'));

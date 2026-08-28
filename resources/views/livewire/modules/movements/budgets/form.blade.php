@@ -209,8 +209,7 @@
                                                     </p>
                                                     <div class="mt-5">
                                                         <x-m-button label="Agregar primer ingreso" icon="o-plus"
-                                                            class="btn-primary"
-                                                            wire:click="newIncome" />
+                                                            class="btn-primary" wire:click="newIncome" />
                                                     </div>
                                                 </div>
                                             </td>
@@ -393,8 +392,7 @@
 
                                                     <div class="mt-5">
                                                         <x-m-button label="Agregar primera partida" icon="o-plus"
-                                                            class="btn-primary"
-                                                            wire:click="newBudgetItem" />
+                                                            class="btn-primary" wire:click="newBudgetItem" />
                                                     </div>
                                                 </div>
                                             </td>
@@ -515,6 +513,25 @@
                                             <x-m-icon name="o-clipboard-document-list" class="h-5 w-5 text-success" />
                                         </div>
                                         <div>
+                                            <p class="font-medium">Ahorro</p>
+                                            <p class="text-xs text-base-content/60">
+                                                {{ collect($incomes)->has('savings_total') ? 'Sobrante' : 'Faltante' }}
+                                                entre ingresos y gastos
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p class="text-lg font-bold ">
+                                        ${{ number_format(collect($incomes)->sum('savings_total'), 2) }}
+                                    </p>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success/10">
+                                            <x-m-icon name="o-clipboard-document-list" class="h-5 w-5 text-success" />
+                                        </div>
+                                        <div>
                                             <p class="font-medium">Balance</p>
                                             <p class="text-xs text-base-content/60">
                                                 {{ collect($incomes)->sum('amount') - collect($budgetItems)->sum('presupuesto') > 0 ? 'Sobrante' : 'Faltante' }}
@@ -524,7 +541,7 @@
                                     </div>
                                     <p
                                         class="text-lg font-bold {{ collect($incomes)->sum('amount') - collect($budgetItems)->sum('presupuesto') > 0 ? 'text-success' : 'text-danger' }}">
-                                        ${{ number_format(collect($incomes)->sum('amount') - collect($budgetItems)->sum('presupuesto'), 2) }}
+                                        ${{ number_format(collect($incomes)->sum('amount') - collect($budgetItems)->sum('presupuesto') - collect($incomes)->sum('savings_total'), 2) }}
                                     </p>
                                 </div>
                             </div>
