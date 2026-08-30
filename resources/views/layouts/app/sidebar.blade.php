@@ -27,23 +27,43 @@
                     :current="request()->routeIs('pockets.*')" wire:navigate>
                     {{ __('Apartados') }}
                 </flux:sidebar.item>
-                <flux:sidebar.group expandable :heading="__('Catalogos')" class="grid"
-                    :expanded="request()->routeIs('catalogs.*')">
-                    <flux:sidebar.item :href="route('catalogs.icons')" :current="request()->routeIs('catalogs.icons')"
-                        wire:navigate>Iconos</flux:sidebar.item>
-                    <flux:sidebar.item :href="route('catalogs.categories')"
-                        :current="request()->routeIs('catalogs.categories')" wire:navigate>Categorias
-                    </flux:sidebar.item>
-                    <flux:sidebar.item :href="route('catalogs.subcategories')"
-                        :current="request()->routeIs('catalogs.subcategories')" wire:navigate>Subcategorias
-                    </flux:sidebar.item>
-                    <flux:sidebar.item :href="route('catalogs.payments')"
-                        :current="request()->routeIs('catalogs.payments')" wire:navigate>Formas de pago
-                    </flux:sidebar.item>
-                    <flux:sidebar.item :href="route('catalogs.expenses')"
-                        :current="request()->routeIs('catalogs.expenses')" wire:navigate>Tipos de Gastos
-                    </flux:sidebar.item>
-                </flux:sidebar.group>
+                @can('view catalogs')
+                    <flux:sidebar.group expandable :heading="__('Catalogos')" class="grid" icon="list-bullet"
+                        :expanded="request()->routeIs('catalogs.*')">
+                        <flux:sidebar.item :href="route('catalogs.icons')" :current="request()->routeIs('catalogs.icons')"
+                            wire:navigate>Iconos</flux:sidebar.item>
+                        <flux:sidebar.item :href="route('catalogs.categories')"
+                            :current="request()->routeIs('catalogs.categories')" wire:navigate>Categorias
+                        </flux:sidebar.item>
+                        <flux:sidebar.item :href="route('catalogs.subcategories')"
+                            :current="request()->routeIs('catalogs.subcategories')" wire:navigate>Subcategorias
+                        </flux:sidebar.item>
+                        <flux:sidebar.item :href="route('catalogs.payments')"
+                            :current="request()->routeIs('catalogs.payments')" wire:navigate>Formas de pago
+                        </flux:sidebar.item>
+                        <flux:sidebar.item :href="route('catalogs.expenses')"
+                            :current="request()->routeIs('catalogs.expenses')" wire:navigate>Tipos de Gastos
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
+                @canany(['view users', 'view roles', 'view permissions'])
+                    <flux:sidebar.group expandable :heading="__('Usuarios')" class="grid" icon="user-group"
+                        :expanded="request()->routeIs('users.*')">
+                        @can('view users')
+                            <flux:sidebar.item :href="route('users.user.index')" :current="request()->routeIs('users.user.*')"
+                                wire:navigate>Usuarios</flux:sidebar.item>
+                        @endcan
+                        @can('view roles')
+                            <flux:sidebar.item :href="route('users.roles')" :current="request()->routeIs('users.roles')"
+                                wire:navigate>Roles</flux:sidebar.item>
+                        @endcan
+                        @can('view permissions')
+                            <flux:sidebar.item :href="route('users.permissions')"
+                                :current="request()->routeIs('users.permissions')" wire:navigate>Permisos
+                            </flux:sidebar.item>
+                        @endcan
+                    </flux:sidebar.group>
+                @endcanany
             </flux:sidebar.group>
         </flux:sidebar.nav>
 
