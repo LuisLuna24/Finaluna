@@ -1,12 +1,13 @@
-<x-m-modal wire:model="incomeForm.modal" title="{{ $incomeForm->editingId !== null ? 'Editar ingreso' : 'Registrar ingreso' }}">
-    <div class="space-y-6">
+<x-m-modal wire:model="incomeForm.modal"
+    title="{{ $incomeForm->editingId !== null ? 'Editar ingreso' : 'Registrar ingreso' }}" box-class="overflow-y-auto">
+    <div class="space-y-6 md:mb-0 mb-12">
         {{-- BASIC DATA --}}
         <div class="space-y-4">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <x-m-select label="Método de pago" :options="$incomeForm->getPaymentMethods()" option-label="nombre" option-value="id"
                     wire:model="incomeForm.incomeMethod" placeholder="Selecciona un método..." />
-                <x-m-input label="Monto" prefix="$" wire:model.live="incomeForm.incomeAmount" type="number" step="0.01"
-                    placeholder="0.00" />
+                <x-m-input label="Monto" prefix="$" wire:model.live="incomeForm.incomeAmount" type="number"
+                    step="0.01" placeholder="0.00" />
             </div>
             <x-m-datetime label="Fecha del ingreso" wire:model="incomeForm.incomeDate" />
             <x-m-input label="Descripción" placeholder="Ej. Pago de cliente, salario, venta..."
@@ -31,8 +32,8 @@
             </div>
 
             <div class="mt-5">
-                <x-m-range wire:model.live="incomeForm.incomeSavingsAllocation" min="0" max="100" class="range-primary"
-                    step="1" />
+                <x-m-range wire:model.live="incomeForm.incomeSavingsAllocation" min="0" max="100"
+                    class="range-primary" step="1" />
             </div>
 
             <div class="mt-4 flex items-start gap-3 rounded-xl bg-primary/10 p-4 text-sm text-primary">
@@ -50,12 +51,12 @@
         {{-- NOTES --}}
         <x-m-textarea label="Notas (opcional)" placeholder="Agrega información adicional sobre este ingreso..."
             wire:model="incomeForm.incomeNotes" rows="3" />
-    </div>
 
-    <x-slot:actions>
-        <x-m-button label="Cancelar" wire:click="$set('incomeForm.modal', false)" />
-        <x-m-button label="{{ $incomeForm->editingId !== null ? 'Guardar cambios' : 'Registrar ingreso' }}"
-            icon="{{ $incomeForm->editingId !== null ? 'o-check' : 'o-plus-circle' }}" class="btn-primary"
-            wire:click="saveIncome" />
-    </x-slot:actions>
+        <div class="flex justify-end gap-2">
+            <x-m-button label="Cancelar" wire:click="$set('incomeForm.modal', false)" />
+            <x-m-button label="{{ $incomeForm->editingId !== null ? 'Guardar cambios' : 'Registrar ingreso' }}"
+                icon="{{ $incomeForm->editingId !== null ? 'o-check' : 'o-plus-circle' }}" class="btn-primary"
+                wire:click="saveIncome" />
+        </div>
+    </div>
 </x-m-modal>

@@ -153,3 +153,60 @@ it('updates an existing budget', function () {
         ->and($budget->fresh()->incomes)->toHaveCount(1)
         ->and($budget->fresh()->budgetItems)->toHaveCount(1);
 });
+
+it('preserves existing income and budget item ids when updating so linked data is not lost', function () {
+    $budget = Budget::create([
+        'user_id' => $this->user->id,
+        'nombre' => 'Presupuesto',
+        'fecha_inicio' => '2026-09-01',
+        'fecha_fin' => '2026-09-30',
+        'presupuesto' => 800.00,
+        'gasto_real' => 0,
+        'balance' => 1500.00,
+        'is_active' => true,
+    ]);
+
+    $income = Income::create([
+        'user_id' => $this->user->id,
+        'budget_id' => $budget->id,
+        'payment_method_id' => $this->paymentMethod->id,
+        'fecha' => '2026-09-01',
+        'descripcion' => 'Salario',
+        'total' => 1500.00,
+        'porcentaje_ahorro' => 10,
+        'is_active' => true,
+    ]);
+
+    $item = BudgetItem::create([
+        'budget_id' => $budget->id,
+        'category_id' => $this->category->id,
+        'subcategory_id' => $this->subcategory->id,
+        'expense_type_id' => $this->expenseType->id,
+        'presupuesto' => 800.00,
+        'gasto_real' => 0,
+    ]);
+
+    $incomeId = $income->id;
+    $itemId = $item->id;
+
+    Livewire::test(BudgetForm::class, ['editId' => $budget->id])
+        ->set('budget.name', 'Presupuesto editado')
+        ->call('editIncome', 0)
+        ->set('incomeForm.incomeAmount', '1800.00')
+        ->call('saveIncome')
+        ->call('editBudgetItem', 0)
+        ->set('budgetItemForm.budgetAmount', '900.00')
+        ->call('saveBudgetItem')
+        ->call('save')
+        ->assertRedirect(route('movements.budgets'));
+
+    $freshIncome = Income::find($incomeId);
+    $freshItem = BudgetItem::find($itemId);
+
+    expect($freshIncome)->not->toBeNull()
+        ->and((float) $freshIncome->total)->toBe(1800.0)
+        ->and($freshItem)->not->toBeNull()
+        ->and((float) $freshItem->presupuesto)->toBe(900.0)
+        ->and(Income::where('budget_id', $budget->id)->count())->toBe(1)
+        ->and(BudgetItem::where('budget_id', $budget->id)->count())->toBe(1);
+});

@@ -1,6 +1,6 @@
 <x-m-modal wire:model="expenseForm.modal"
     title="{{ $expenseForm->editingId !== null ? 'Editar gasto' : 'Registrar gasto' }}">
-    <div class="space-y-6">
+    <div class="space-y-6 mb-12 md:mb-0">
 
         @if ($expenseForm->budgetItemId === null)
             <div class="rounded-2xl border border-base-300 bg-base-200/30 p-5">
@@ -32,12 +32,11 @@
 
         <x-m-textarea label="Notas (opcional)" placeholder="Agrega información adicional sobre este gasto..."
             wire:model="expenseForm.expenseNotes" rows="3" />
+        <div class="flex justify-end gap-2">
+            <x-m-button label="Cancelar" wire:click="$set('expenseForm.modal', false)" />
+            <x-m-button label="{{ $expenseForm->editingId !== null ? 'Guardar cambios' : 'Registrar gasto' }}"
+                icon="{{ $expenseForm->editingId !== null ? 'o-check' : 'o-plus-circle' }}" class="btn-error"
+                wire:click="saveExpense" />
+        </div>
     </div>
-
-    <x-slot:actions>
-        <x-m-button label="Cancelar" wire:click="$set('expenseForm.modal', false)" />
-        <x-m-button label="{{ $expenseForm->editingId !== null ? 'Guardar cambios' : 'Registrar gasto' }}"
-            icon="{{ $expenseForm->editingId !== null ? 'o-check' : 'o-plus-circle' }}" class="btn-error"
-            wire:click="saveExpense" />
-    </x-slot:actions>
 </x-m-modal>
