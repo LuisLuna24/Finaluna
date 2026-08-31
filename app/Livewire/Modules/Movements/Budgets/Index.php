@@ -83,7 +83,7 @@ class Index extends Component
             ['key' => 'is_active', 'label' => 'Estatus'],
         ];
         $budgets = Budget::query()->with(['budgetItems.expenses', 'incomes', 'user'])->where('user_id', Auth::user()->id)
-            ->where('nombre', 'like', '%' . $this->search . '%')->paginate(15);
+            ->where('nombre', 'like', '%'.$this->search.'%')->paginate(15);
 
         $budgets->each(function ($budget) {
             $budget->gasto = $budget->budgetItems->sum(function ($item) {

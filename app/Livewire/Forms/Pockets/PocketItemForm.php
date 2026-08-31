@@ -4,7 +4,6 @@ namespace App\Livewire\Forms\Pockets;
 
 use App\Models\PaymentMethod;
 use App\Models\PocketItem;
-use Illuminate\Support\Facades\DB;
 use Livewire\Form;
 
 class PocketItemForm extends Form

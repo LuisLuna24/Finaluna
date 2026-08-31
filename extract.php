@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
+
 $models = [
     'Budget',
     'BudgetPocketItem',
@@ -19,13 +21,15 @@ $models = [
 // and belongsTo relationships based on *_id
 $output = [];
 foreach ($models as $modelName) {
-    $className = '\\App\\Models\\' . $modelName;
-    if (!class_exists($className)) continue;
+    $className = '\\App\\Models\\'.$modelName;
+    if (! class_exists($className)) {
+        continue;
+    }
     $model = new $className;
     $table = $model->getTable();
-    $columns = \Illuminate\Support\Facades\Schema::getColumnListing($table);
-    $fillable = array_values(array_filter($columns, function($c) {
-        return !in_array($c, ['id', 'created_at', 'updated_at']);
+    $columns = Schema::getColumnListing($table);
+    $fillable = array_values(array_filter($columns, function ($c) {
+        return ! in_array($c, ['id', 'created_at', 'updated_at']);
     }));
     $output[$modelName] = [
         'fillable' => $fillable,

@@ -14,15 +14,15 @@ class BudgetItemForm extends Form
 
     public ?int $editingId = null;
 
-    public $budgetCategoryId;
+    public ?int $budgetCategoryId = null;
 
-    public $budgetSubcategoryId;
+    public ?int $budgetSubcategoryId = null;
 
-    public $budgetExpenseTypeId;
+    public ?int $budgetExpenseTypeId = null;
 
-    public $budgetAmount;
+    public ?string $budgetAmount = null;
 
-    public $budgetNotes;
+    public ?string $budgetNotes = null;
 
     public function updatedBudgetExpenseTypeId($value)
     {

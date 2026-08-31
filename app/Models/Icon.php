@@ -10,7 +10,7 @@ class Icon extends Model
 
     protected $fillable = [
         'name',
-        'icon'
+        'icon',
     ];
 
     public $timestamps = false;

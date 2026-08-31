@@ -9,14 +9,17 @@ use Mary\Traits\Toast;
 
 class Index extends Component
 {
-    use WithPagination;
     use Toast;
+    use WithPagination;
 
     public $search = '';
 
     public $formModal = false;
+
     public $name = '';
+
     public $icon = '';
+
     public $editId;
 
     public function create(): void
@@ -75,7 +78,8 @@ class Index extends Component
             ['key' => 'name', 'label' => 'Nombre'],
             ['key' => 'icon', 'label' => 'Icono'],
         ];
-        $icons = Icon::query()->where('name', 'like', '%' . $this->search . '%')->paginate(15);
+        $icons = Icon::query()->where('name', 'like', '%'.$this->search.'%')->paginate(15);
+
         return view('livewire.modules.catalogs.icons.index', compact('icons', 'headers'));
     }
 }

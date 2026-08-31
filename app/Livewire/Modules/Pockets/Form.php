@@ -42,7 +42,7 @@ class Form extends Component
                 'monto' => (string) ($pocket->meta_apartado ?? ''),
             ];
 
-            $this->pocketItems = $pocket->pocketItems->map(fn(PocketItem $item) => [
+            $this->pocketItems = $pocket->pocketItems->map(fn (PocketItem $item) => [
                 'method_id' => $item->payment_method_id,
                 'method' => $item->paymentMethod?->nombre ?? 'Desconocido',
                 'descripcion' => $item->descripcion ?? '',

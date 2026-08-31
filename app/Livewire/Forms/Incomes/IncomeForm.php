@@ -28,7 +28,6 @@ class IncomeForm extends Form
 
     public string $incomeNotes = '';
 
-
     public function openNew(?int $budgetId = null): void
     {
         $this->reset();

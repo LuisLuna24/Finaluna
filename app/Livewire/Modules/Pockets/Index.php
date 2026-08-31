@@ -49,7 +49,7 @@ class Index extends Component
     public function render()
     {
         $pockets = Pocket::query()->with(['user', 'pocketItems'])->where('user_id', Auth::user()->id)
-            ->where('nombre', 'like', '%' . $this->search . '%')->paginate(15);
+            ->where('nombre', 'like', '%'.$this->search.'%')->paginate(15);
 
         $pockets->each(function ($pocket) {
             $pocket->apartado = $pocket->pocketItems->sum('monto');

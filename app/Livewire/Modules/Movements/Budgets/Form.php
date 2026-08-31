@@ -91,8 +91,10 @@ class Form extends Component
 
     public function newIncome(): void
     {
-        $this->incomeForm->openNew();
+        $this->incomeForm->reset();
+        $this->incomeForm->incomeDate = now()->format('Y-m-d\TH:i');
         $this->incomeForm->incomeSavingsAllocation = 10;
+        $this->incomeForm->modal = true;
     }
 
     public function saveIncome(): void
@@ -107,15 +109,16 @@ class Form extends Component
         ]);
 
         $method = PaymentMethod::find($this->incomeForm->incomeMethod);
+        $amount = (float) $this->incomeForm->incomeAmount;
 
         $incomeData = [
             'method_id' => $this->incomeForm->incomeMethod,
-            'method' => $method ? $method->nombre : 'Desconocido',
+            'method' => $method?->nombre ?? 'Desconocido',
             'date' => $this->incomeForm->incomeDate,
-            'amount' => (float) $this->incomeForm->incomeAmount,
+            'amount' => $amount,
             'description' => $this->incomeForm->incomeDescription,
             'savings_allocation' => $this->incomeForm->incomeSavingsAllocation,
-            'savings_total' => $this->incomeForm->incomeSavingsAllocation * $this->incomeForm->incomeAmount / 100,
+            'savings_total' => round($this->incomeForm->incomeSavingsAllocation * $amount / 100, 2),
             'notes' => $this->incomeForm->incomeNotes,
         ];
 
@@ -132,9 +135,13 @@ class Form extends Component
         $this->incomeForm->reset();
     }
 
-    public function editIncome($index): void
+    public function editIncome(int $index): void
     {
-        $income = $this->incomes[$index];
+        $income = $this->incomes[$index] ?? null;
+
+        if (! $income) {
+            return;
+        }
 
         $this->incomeForm->reset();
         $this->incomeForm->editingId = $index;
@@ -147,10 +154,11 @@ class Form extends Component
         $this->incomeForm->modal = true;
     }
 
-    public function removeIncome($index): void
+    public function removeIncome(int $index): void
     {
         unset($this->incomes[$index]);
         $this->incomes = array_values($this->incomes);
+        $this->incomeForm->reset();
     }
 
     public function newBudgetItem(): void
@@ -175,13 +183,13 @@ class Form extends Component
 
         $itemData = [
             'category_id' => $this->budgetItemForm->budgetCategoryId,
-            'category_name' => $category ? $category->nombre : 'N/A',
+            'category_name' => $category?->nombre ?? 'N/A',
             'subcategory_id' => $this->budgetItemForm->budgetSubcategoryId,
-            'subcategory_name' => $subcategory ? $subcategory->nombre : 'N/A',
+            'subcategory_name' => $subcategory?->nombre ?? 'N/A',
             'expense_type_id' => $this->budgetItemForm->budgetExpenseTypeId,
-            'expense_type_name' => $expenseType ? $expenseType->nombre : 'N/A',
+            'expense_type_name' => $expenseType?->nombre ?? 'N/A',
             'presupuesto' => (float) $this->budgetItemForm->budgetAmount,
-            'notas' => $this->budgetItemForm->budgetNotes ?? $subcategory->nombre ?? 'N/A',
+            'notas' => $this->budgetItemForm->budgetNotes ?? $subcategory?->nombre ?? 'N/A',
         ];
 
         if ($this->budgetItemForm->editingId !== null) {
@@ -197,24 +205,29 @@ class Form extends Component
         $this->budgetItemForm->reset();
     }
 
-    public function editBudgetItem($index): void
+    public function editBudgetItem(int $index): void
     {
-        $item = $this->budgetItems[$index];
+        $item = $this->budgetItems[$index] ?? null;
+
+        if (! $item) {
+            return;
+        }
 
         $this->budgetItemForm->reset();
         $this->budgetItemForm->editingId = $index;
+        $this->budgetItemForm->budgetExpenseTypeId = $item['expense_type_id'];
         $this->budgetItemForm->budgetCategoryId = $item['category_id'];
         $this->budgetItemForm->budgetSubcategoryId = $item['subcategory_id'];
-        $this->budgetItemForm->budgetExpenseTypeId = $item['expense_type_id'];
         $this->budgetItemForm->budgetAmount = (string) $item['presupuesto'];
         $this->budgetItemForm->budgetNotes = $item['notas'];
         $this->budgetItemForm->modal = true;
     }
 
-    public function removeBudgetItem($index): void
+    public function removeBudgetItem(int $index): void
     {
         unset($this->budgetItems[$index]);
         $this->budgetItems = array_values($this->budgetItems);
+        $this->budgetItemForm->reset();
     }
 
     public function save()
@@ -252,7 +265,6 @@ class Form extends Component
                 ]);
             }
 
-            // Sync incomes: update existing and create new, preserving their IDs
             $incomeIds = [];
             foreach ($this->incomes as $incomeData) {
                 $incomeFields = [
@@ -263,7 +275,6 @@ class Form extends Component
                     'porcentaje_ahorro' => $incomeData['savings_allocation'],
                     'total_ahorro' => $incomeData['savings_total'],
                     'notes' => $incomeData['notes'],
-                    'is_active' => true,
                 ];
 
                 if ($this->editId && isset($incomeData['id'])) {
@@ -274,17 +285,16 @@ class Form extends Component
                         'user_id' => Auth::user()->id ?? 1,
                         'budget_id' => $budget->id,
                         ...$incomeFields,
+                        'is_active' => true,
                     ]);
                     $incomeIds[] = $income->id;
                 }
             }
 
-            // Remove incomes that were deleted from the form
             if ($this->editId) {
                 $budget->incomes()->whereNotIn('id', $incomeIds)->delete();
             }
 
-            // Sync budget items: update existing and create new, preserving their IDs
             $budgetItemIds = [];
             foreach ($this->budgetItems as $itemData) {
                 $itemFields = [
@@ -292,7 +302,6 @@ class Form extends Component
                     'subcategory_id' => $itemData['subcategory_id'],
                     'expense_type_id' => $itemData['expense_type_id'],
                     'presupuesto' => $itemData['presupuesto'],
-                    'gasto_real' => 0,
                     'notas' => $itemData['notas'],
                 ];
 
@@ -303,12 +312,12 @@ class Form extends Component
                     $item = BudgetItem::create([
                         'budget_id' => $budget->id,
                         ...$itemFields,
+                        'gasto_real' => 0,
                     ]);
                     $budgetItemIds[] = $item->id;
                 }
             }
 
-            // Remove budget items that were deleted from the form
             if ($this->editId) {
                 $budget->budgetItems()->whereNotIn('id', $budgetItemIds)->delete();
             }

@@ -48,7 +48,7 @@ class RoleSeeder extends Seeder
         $all = PermissionSeeder::permissions();
 
         return collect($modules)
-            ->flatMap(fn(string $module) => $all[$module] ?? [])
+            ->flatMap(fn (string $module) => $all[$module] ?? [])
             ->values()
             ->all();
     }

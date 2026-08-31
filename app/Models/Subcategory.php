@@ -11,7 +11,7 @@ class Subcategory extends Model
     protected $fillable = [
         'category_id',
         'nombre',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [

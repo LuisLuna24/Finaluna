@@ -80,7 +80,7 @@ class Index extends Component
             ['key' => 'descripcion', 'label' => 'Descripción'],
             ['key' => 'total', 'label' => 'Monto'],
             ['key' => 'fecha', 'label' => 'Fecha'],
-            ['key' => 'paymentMethod.nombre', 'label' => 'Método de pago']
+            ['key' => 'paymentMethod.nombre', 'label' => 'Método de pago'],
         ];
 
         $expenses = $this->expenseId
@@ -90,7 +90,7 @@ class Index extends Component
         $budgetsItems = BudgetItem::query()
             ->with(['budget', 'category', 'expenseType', 'category.icon', 'expenses.paymentMethod'])
             ->where('budget_id', $this->id)
-            ->where('notas', 'like', '%' . $this->search . '%')
+            ->where('notas', 'like', '%'.$this->search.'%')
             ->paginate(15);
 
         return view('livewire.modules.movements.expenses.index', compact('budgetsItems', 'headers', 'expenses'));
